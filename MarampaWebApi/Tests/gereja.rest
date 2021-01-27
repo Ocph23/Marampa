@@ -1,0 +1,47 @@
+@controller= https://localhost:5001/api/gereja
+
+GET {{controller}} HTTP/1.1
+Content-Type: application/json
+
+####
+
+GET {{controller}}/1 HTTP/1.1
+Content-Type: application/json
+
+####
+
+
+POST {{controller}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "id": 0,
+  "berkas": "string",
+  "sinode": "Gereja Kristen Injili Di Tanah Papua",
+  "klasis": "Klasis Abepura",
+  "nama": "GKI Marampa Abepura",
+  "alamat": "Jln. Kali Acai",
+  "telepon": "0811252",
+  "email": "marampa@gmail.com",
+  "website": "Marampa.com",
+  "tahunPelayanan":  {
+    "id": 1,
+  }
+}
+###
+
+PUT {{controller}}/1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "id":1,
+  "mulai": "2021-01-27T04:09:17.019Z",
+  "sampai": "2022-01-27T04:09:17.019Z",
+  "aktif": true
+}
+###
+
+
+DELETE {{controller}}/2  HTTP/1.1
+Content-Type: application/json
+

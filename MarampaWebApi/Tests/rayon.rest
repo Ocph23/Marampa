@@ -1,0 +1,94 @@
+@controller= https://localhost:5001/api/rayon
+
+GET {{controller}} HTTP/1.1
+Content-Type: application/json
+
+####
+
+
+
+GET {{controller}}/1 HTTP/1.1
+Content-Type: application/json
+
+####
+
+
+POST {{controller}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nama": "Wik I",
+  "deskripsi": "Wilayah Kali Acai dan sekitar",
+}
+###
+
+
+
+
+Put {{controller}}/1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "Id": 1,
+  "nama": "Wik I",
+  "deskripsi": "Wilayah Kali Acai dan ",
+  "ketua":
+   {
+      "nik": "125252",
+      "nama": "Yoseph Kungkung",
+      "jenisKelamin": 0,
+      "tanggalLahir": "2021-01-25T14:45:01.552",
+      "hubunganKeluarga": 1,
+      "statusJemaat": 0,
+      "pekerjaan": null,
+      "statusPernikahan": false,
+      "nikah": null,
+      "baptis": null,
+      "sidi": null,
+      "id": 2,
+      "created": "0001-01-01T00:00:00",
+      "updated": "2021-01-26T18:35:29.391918",
+      "berkas": null
+    }, 
+    "sekertaris":
+    {
+      "nik": "",
+      "nama": "Elisabeth Hamid",
+      "jenisKelamin": 1,
+      "tanggalLahir": "2021-01-25T14:45:01.552",
+      "hubunganKeluarga": 2,
+      "statusJemaat": 0,
+      "pekerjaan": null,
+      "statusPernikahan": false,
+      "nikah": null,
+      "baptis": null,
+      "sidi": null,
+      "id": 4,
+      "created": "2021-01-26T19:12:10.748278",
+      "updated": "2021-01-26T19:12:19.437511",
+      "berkas": null
+    },
+    "bendahara": {
+      "nik": null,
+      "nama": "Aldrich Alpha Jordain",
+      "jenisKelamin": 0,
+      "tanggalLahir": "2021-01-25T14:45:01.552",
+      "hubunganKeluarga": 3,
+      "statusJemaat": 0,
+      "pekerjaan": null,
+      "statusPernikahan": false,
+      "nikah": null,
+      "baptis": null,
+      "sidi": null,
+      "id": 9,
+      "created": "2021-01-26T20:29:37.548849",
+      "updated": "2021-01-26T20:29:40.104101",
+      "berkas": null
+    }
+}
+###
+
+
+
+
+####
