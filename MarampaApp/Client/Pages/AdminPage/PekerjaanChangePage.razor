@@ -1,0 +1,38 @@
+﻿@inject Radzen.DialogService ds
+
+<Radzen.Blazor.RadzenTemplateForm Data="Model">
+    <div class="row">
+        <div class="col-md-4 align-items-center d-flex">
+            <RadzenLabel Text="Nama" />
+        </div>
+        <div class="col-md-8">
+            <RadzenTextBox style="width: 100%;" @bind-Value="Model.Nama" />
+            <ValidationMessage For="() => Model.Nama" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 align-items-center d-flex">
+            <RadzenLabel Text="Deskripsi" />
+        </div>
+        <div class="col-md-8">
+            <RadzenTextArea style="width: 100%;" @bind-Value="Model.Deskripsi" />
+        </div>
+    </div>
+</Radzen.Blazor.RadzenTemplateForm>
+<div class="row" style="display:flex;justify-content:flex-end;margin:10px">
+    <RadzenButton Text="Ok" Click="() => ds.Close(Model)" Style="margin-bottom: 10px; width: 150px" />
+    <RadzenButton Text="Cancel" Click="() => ds.Close(null)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px" />
+</div>
+
+
+
+@code {
+    [Parameter] public Pekerjaan Model { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        if (Model == null)
+            Model = new Pekerjaan();
+    }
+}

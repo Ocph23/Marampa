@@ -1,0 +1,46 @@
+@controller= https://localhost:5001/api/tahunpelayanan
+
+GET {{controller}} HTTP/1.1
+Content-Type: application/json
+
+####
+
+GET {{controller}}/1 HTTP/1.1
+Content-Type: application/json
+
+
+####
+
+GET {{controller}}/aktif HTTP/1.1
+Content-Type: application/json
+
+####
+
+POST {{controller}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "id": 0,
+  "berkas": "string",
+  "mulai": "2021-01-27T04:09:17.019Z",
+  "sampai": "2022-01-27T04:09:17.019Z",
+  "aktif": true
+}
+###
+
+PUT {{controller}}/1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "tahun": "2021/2020",
+  "mulai": "2021-01-30T05:06:37.043",
+  "sampai": "2020-01-30T00:00:00",
+  "aktif": true,
+  "id": 1,
+  "created": "2021-01-29T20:07:09.0318935",
+  "updated": "2021-01-29T20:07:09.0318935",
+  "berkas": null
+}
+###
+
+

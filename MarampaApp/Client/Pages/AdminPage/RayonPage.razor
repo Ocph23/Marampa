@@ -1,0 +1,194 @@
+﻿@page "/admin/rayon"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MarampaApp.Shared
+
+@attribute [Authorize]
+@inject HttpClient Http
+@inject SweetAlertService Swal
+@inject DialogService DialogService
+@inject ContextMenuService ContextMenuService
+@inject TooltipService tooltipService
+
+
+<div class="row" style="width:100%">
+    <Radzen.Blazor.RadzenFieldset>
+        <HeaderTemplate>
+            <span>
+                <b>Data Rayon/WIK</b>
+            </span>
+        </HeaderTemplate>
+        <ChildContent>
+            <div style="margin-bottom:10px; display:flex;justify-content:flex-end">
+                <RadzenButton Size="ButtonSize.Medium" Icon="add" ButtonStyle="ButtonStyle.Success" Style="text-align:right"
+                              Click=@(args => DialogService.Open<RayonChangePage>($"Rayon/WIK Baru",
+                        new Dictionary<string, object>() { { "Model", null } })) />
+            </div>
+            <RadzenGrid Data="@sources"
+                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" TItem="Rayon">
+                <Columns>
+                    <RadzenGridColumn TItem="Rayon" Property="Nama" Title="Nama" />
+                    <RadzenGridColumn Width="auto" TItem="Rayon" Property="Deskripsi" Title="Deskripsi" />
+                    <RadzenGridColumn Width="80px" TItem="Rayon">
+                        <Template Context="item">
+                            <RadzenButton Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Warning" Icon="edit"
+                                          Click=@(args => DialogService.Open<RayonChangePage>($"Edit Rayon/WIK",
+                        new Dictionary<string, object>() { { "Model", item } }))
+                                          MouseEnter="@((args) => tooltipService.Open(args, "Edit",  new TooltipOptions(){ Position = TooltipPosition.Left }))" />
+                            <RadzenButton Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Danger" Icon="remove"
+                                          Click="@(arg =>RemoveData(item))"
+                                          MouseEnter="@(args => tooltipService.Open(args, "Hapus",  new TooltipOptions(){ Position = TooltipPosition.Left }))" />
+                        </Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+        </ChildContent>
+    </Radzen.Blazor.RadzenFieldset>
+</div>
+
+
+
+@code {
+
+
+    string controller = "/api/rayon";
+
+    private ICollection<Rayon> sources;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            DialogService.OnClose += Close;
+
+            var responseMessage = await Http.GetAsync($"{controller}");
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var data = await HttpHelper.GetResult<IEnumerable<Rayon>>(responseMessage);
+                if (data != null)
+                {
+                    sources = data.ToList();
+                }
+            }
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    void Close(dynamic result)
+    {
+        if (result != null && result.GetType()== typeof(Rayon))
+        {
+            Task.Factory.StartNew(() => OnSave(result as Rayon));
+        }
+    }
+
+
+    async Task RemoveData(Rayon item)
+    {
+        try
+        {
+            var cancelToken = new System.Threading.CancellationTokenSource();
+
+            var result=  await DialogService.OpenAsync("Simple Dialog", ds =>
+                    @<div>
+                        <p Style="margin-bottom: 1rem">Yakin Hapus Data ?</p>
+                        <div class="row">
+                            <div class="col-md-12" style="display:flex;justify-content:flex-end">
+                                <RadzenButton Text="Ok" Click="() => ds.Close(true)" Style="margin-bottom: 10px; " />
+                                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; " />
+                            </div>
+                        </div>
+                    </div>);
+            if (result == true)
+            {
+                var response = await Http.DeleteAsync($"api/Rayon/{item.Id}",  cancelToken.Token);
+                if (response.IsSuccessStatusCode)
+                {
+                    var rayon = sources.SingleOrDefault(x => x.Id == item.Id);
+                    if (rayon != null)
+                    {
+                        sources.Remove(rayon);
+
+                    }
+
+                    await Swal.FireAsync("Success", "Data Berhasil Dihapus !", SweetAlertIcon.Success);
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+
+            await Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+        }
+    }
+
+    async Task OnSave(Rayon model)
+    {
+        try
+        {
+
+            var cancelToken = new System.Threading.CancellationTokenSource();
+
+            if (model.Id <= 0)
+            {
+                var response = await Http.PostAsJsonAsync<Rayon>
+                    ($"{controller}", model, cancelToken.Token);
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await HttpHelper.GetResult<Rayon>
+                        (response);
+                    sources.Add(data);
+                    await Swal.FireAsync("Success", "Data Berhasil Disimpan !", SweetAlertIcon.Success);
+                    await InvokeAsync(() => StateHasChanged());
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+            else
+            {
+                var response = await Http.PutAsJsonAsync<Rayon>
+                    ($"api/Rayon/{model.Id}", model, cancelToken.Token);
+                if (response.IsSuccessStatusCode)
+                {
+                    var saved = await HttpHelper.GetResult<bool>
+                        (response);
+                    if (saved)
+                    {
+                        var rayon = sources.SingleOrDefault(x => x.Id == model.Id);
+                        if (rayon != null)
+                        {
+                            rayon.Nama = model.Nama;
+                            rayon.Deskripsi = model.Deskripsi;
+                            await InvokeAsync(() => StateHasChanged());
+                        }
+
+                        await Swal.FireAsync("Success", "Data Berhasil Disimpan !", SweetAlertIcon.Success);
+                    }
+                    return;
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+        }
+
+    }
+}

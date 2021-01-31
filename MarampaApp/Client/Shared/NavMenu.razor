@@ -1,0 +1,32 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">MarampaApp</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <RadzenPanelMenu Style="width:100%">
+        <RadzenPanelMenuItem Text="General" Icon="home">
+            <RadzenPanelMenuItem Text="Info Gereja" Path="/admin/gereja" Icon="account_circle"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Tahun Pelayanan" Path="/admin/tahunpelayanan" Icon="line_weight"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Rayon/WIK" Path="/admin/rayon" Icon="perm_media"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Pekerjaan" Path="/admin/pekerjaan" Icon="announcement"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+        <RadzenPanelMenuItem Text="Jemaat/Umat" Icon="account_circle">
+            <RadzenPanelMenuItem Text="Keluarga" Path="/keluarga" Icon="attach_file"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Jemaat" Path="/jemaat" Icon="announcement"></RadzenPanelMenuItem>
+        </RadzenPanelMenuItem>
+    </RadzenPanelMenu>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

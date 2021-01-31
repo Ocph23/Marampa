@@ -1,0 +1,148 @@
+﻿@page "/keluarga"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MarampaApp.Shared
+
+
+
+@attribute [Authorize]
+@inject HttpClient Http
+@inject SweetAlertService Swal
+@inject NavigationManager nav
+
+<div class="row">
+    <Radzen.Blazor.RadzenFieldset>
+        <HeaderTemplate>
+            <span>
+                <b>Data Keluarga</b>
+            </span>
+        </HeaderTemplate>
+        <ChildContent>
+            <div style="margin-bottom:10px; display:flex;justify-content:flex-end">
+                <RadzenButton Size="ButtonSize.Medium" Click="@(()=>nav.NavigateTo("/keluarga/addkeluarga"))" Icon="add" ButtonStyle="ButtonStyle.Success" Style="text-align:right" />
+            </div>
+            <RadzenGrid Data="@sources"
+                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" TItem="TahunPelayanan" ColumnWidth="200px">
+                <Columns>
+                    <RadzenGridColumn TItem="TahunPelayanan" Property="Tahun" Title="Tahun Pelayanan" />
+                    <RadzenGridColumn TItem="TahunPelayanan" Property="Mulai" Title="Mulai" />
+                    <RadzenGridColumn TItem="TahunPelayanan" Property="Sampai" Title="Mulai" />
+                    <RadzenGridColumn TItem="TahunPelayanan" Property="Aktif" Title="Aktif" />
+                </Columns>
+            </RadzenGrid>
+        </ChildContent>
+    </Radzen.Blazor.RadzenFieldset>
+</div>
+
+
+
+@code {
+    string controller = "/api/tahunpelayanan";
+    private TahunPelayanan Model;
+
+
+    private TahunPelayanan[] sources;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var responseMessage = await Http.GetAsync($"{controller}/aktif");
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var data = await HttpHelper.GetResult<TahunPelayanan>(responseMessage);
+                if (data == null)
+                {
+                    Model = new TahunPelayanan() { Aktif = true, Mulai = DateTime.Now, Sampai = DateTime.Now.AddYears(1) };
+                }
+                else
+                {
+                    Model = data;
+                }
+                await InvokeAsync(() => StateHasChanged());
+            }
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+
+    bool IsCanCreateNew()
+    {
+        var result = false;
+        if (Model == null)
+            result = false;
+        else
+            result = Model.Sampai.Date <= DateTime.Now ? true : false;
+        return result;
+    }
+
+
+    Task OnCreateNew()
+    {
+        Model = new TahunPelayanan() { Aktif = true, Mulai = DateTime.Now, Sampai = DateTime.Now.AddYears(1) };
+        return Task.CompletedTask;
+    }
+
+    async Task OnSave(TahunPelayanan model)
+    {
+        try
+        {
+
+            var cancelToken = new System.Threading.CancellationTokenSource();
+
+            if (Model.Id <= 0)
+            {
+                var response = await Http.PostAsJsonAsync<TahunPelayanan>($"{controller}", Model, cancelToken.Token);
+                if (response.IsSuccessStatusCode)
+                {
+                    Model = await HttpHelper.GetResult<TahunPelayanan>(response);
+                    return;
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+            else
+            {
+                var response = await Http.PutAsJsonAsync<TahunPelayanan>($"api/TahunPelayanan/{Model.Id}", Model, cancelToken.Token);
+                if (response.IsSuccessStatusCode)
+                {
+                    var saved = await HttpHelper.GetResult<bool>(response);
+                    if (saved)
+                    {
+                        await Swal.FireAsync("Success", "Data Berhasil Disimpan !", SweetAlertIcon.Success);
+                    }
+                    return;
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+        }
+
+    }
+
+    async Task ViewHistoryData()
+    {
+        var responseMessage = await Http.GetAsync($"{controller}");
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            sources = await HttpHelper.GetResult<TahunPelayanan[]>(responseMessage);
+        }
+
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+}
+
+

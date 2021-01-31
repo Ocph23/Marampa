@@ -1,0 +1,218 @@
+﻿@page "/keluarga/addkeluarga"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+
+@attribute [Authorize]
+@inject HttpClient Http
+@inject SweetAlertService Swal;
+
+
+<h3>Keluarga Baru</h3>
+
+<div class="row">
+    <div class="col-xl-12">
+        <RadzenSteps Change=@OnChange>
+            <Steps>
+                <RadzenStepsItem Text="Data Keluarga" Style="padding:20px">
+                    <RadzenFieldset Text="Data Keluarga">
+                        <Radzen.Blazor.RadzenTemplateForm Data="Model">
+                            <div class="row">
+                                <div class="col-md-4 align-items-center d-flex">
+                                    <RadzenLabel Text="Nomor Kartu Keluarga" />
+                                </div>
+                                <div class="col-md-8">
+                                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.NomorKartuKeluarga" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 align-items-center d-flex">
+                                    <RadzenLabel Text="Rayon" />
+                                </div>
+                                <div class="col-md-8">
+                                    <RadzenDropDown Data="rayons" TextProperty="Nama" style="width: 100%;" TValue="Rayon" @bind-Value="Model.Rayon" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 align-items-center d-flex">
+                                    <RadzenLabel Text="Alamat" />
+                                </div>
+                                <div class="col-md-8">
+                                    <RadzenTextArea style="width: 100%;" @bind-Value="Model.Alamat" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 align-items-center d-flex">
+                                    <RadzenLabel Text="No Telepon" />
+                                </div>
+                                <div class="col-md-8">
+                                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Telepon" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 align-items-center d-flex">
+                                    <RadzenLabel Text="Tanggal Terdaftar" />
+                                </div>
+                                <div class="col-md-8">
+                                    <RadzenDatePicker style="width: 100%;" @bind-Value="Model.Terdaftar" />
+                                </div>
+                            </div>
+                        </Radzen.Blazor.RadzenTemplateForm>
+                    </RadzenFieldset>
+                    <RadzenFieldset Text="Data Kepala Keluarga">
+                        <Radzen.Blazor.RadzenTemplateForm Data="Model.KepalaKeluarga">
+                            <div class="row">
+                                <div class="col-md-4 align-items-center d-flex">
+                                    <RadzenLabel Text="NIK" />
+                                </div>
+                                <div class="col-md-8">
+                                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.KepalaKeluarga.NIK" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 align-items-center d-flex">
+                                    <RadzenLabel Text="Nama" />
+                                </div>
+                                <div class="col-md-8">
+                                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.KepalaKeluarga.Nama" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 align-items-center d-flex">
+                                    <RadzenLabel Text="Jenis Kelamin" />
+                                </div>
+                                <div class="col-md-8">
+                                    <RadzenRadioButtonList @bind-Value=@Model.KepalaKeluarga.JenisKelamin TValue="JenisKelamin">
+                                        <Items>
+                                            <RadzenRadioButtonListItem Text="Pria" Value="JenisKelamin.Pria" />
+                                            <RadzenRadioButtonListItem Text="Wanita" Value="JenisKelamin.Wanita" />
+                                        </Items>
+                                    </RadzenRadioButtonList>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 align-items-center d-flex">
+                                    <RadzenLabel Text="Tanggal Lahir" />
+                                </div>
+                                <div class="col-md-8">
+                                    <RadzenDatePicker style="width: 100%;" @bind-Value="Model.KepalaKeluarga.TanggalLahir" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 align-items-center d-flex">
+                                    <RadzenLabel Text="Status Perkawinan" />
+                                </div>
+                                <div class="col-md-8">
+                                    <RadzenRadioButtonList @bind-Value=@Model.KepalaKeluarga.StatusPernikahan TValue="Boolean">
+                                        <Items>
+                                            <RadzenRadioButtonListItem Text="Kawin" Value="true" />
+                                            <RadzenRadioButtonListItem Text="Belum" Value="false" />
+                                        </Items>
+                                    </RadzenRadioButtonList>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 align-items-center d-flex">
+                                    <RadzenLabel Text="Pekerjaan" />
+                                </div>
+                                <div class="col-md-8">
+                                    <RadzenDropDown Data="pekerjaans" TextProperty="Nama" style="width: 100%;" TValue="Pekerjaan" @bind-Value="Model.KepalaKeluarga.Pekerjaan" />
+                                </div>
+                            </div>
+                        </Radzen.Blazor.RadzenTemplateForm>
+                    </RadzenFieldset>
+
+                </RadzenStepsItem>
+                <RadzenStepsItem Text="Anggota Keluarga" Disabled="@(IsNotCompleteModel())">
+                    <Radzen.Blazor.RadzenFieldset>
+                        <HeaderTemplate>
+                                <h3>Anggota Keluarga</h3>
+                        </HeaderTemplate>
+                        <ChildContent>
+                            <div style="margin-bottom:10px; display:flex;justify-content:flex-end">
+                                <RadzenButton Size="ButtonSize.Medium" Icon="add" ButtonStyle="ButtonStyle.Success" Style="text-align:right"/>
+                            </div>
+                            <RadzenGrid Data="@Model.Jemaat" 
+                                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" TItem="Jemaat" ColumnWidth="200px">
+                                <Columns>
+                                    <RadzenGridColumn TItem="Jemaat" Property="NIK" Title="NIK" />
+                                    <RadzenGridColumn TItem="Jemaat" Property="Nama" Title="Nama" >
+                                        <EditTemplate Context="item">
+                                            <RadzenTextBox @bind-Value="item.Nama"/>
+                                        </EditTemplate>
+                                    </RadzenGridColumn>
+                                    <RadzenGridColumn TItem="Jemaat" Property="JenisKelamin" Title="Jenis Kelamin" >
+                                        <EditTemplate Context="item">
+                                            <RadzenDropDown Data="@(Enum.GetValues(typeof(JenisKelamin)))" TValue="JenisKelamin" @bind-Value="item.JenisKelamin" />
+                                        </EditTemplate>
+                                    </RadzenGridColumn>
+                                    <RadzenGridColumn TItem="Jemaat" Property="HubunganKeluarga" Title="Hubungan Kekeluargaan">
+                                        <EditTemplate Context="item">
+                                            <RadzenDropDown Data="@(Enum.GetValues(typeof(HubunganKeluarga)))" TValue="HubunganKeluarga" @bind-Value="item.HubunganKeluarga" />
+                                        </EditTemplate>
+                                    </RadzenGridColumn>
+                                    <RadzenGridColumn TItem="Jemaat" Property="StatusPernikahan" Title="Kawin">
+                                        <EditTemplate Context="item">
+                                            <RadzenCheckBox  @bind-Value="item.StatusPernikahan" />
+                                        </EditTemplate>
+                                    </RadzenGridColumn>
+                                    <RadzenGridColumn TItem="Jemaat" Property="TanggalLahir" Title="Tanggal Lahir">
+                                        <EditTemplate Context="item">
+                                            <RadzenDatePicker @bind-Value="item.TanggalLahir" />
+                                        </EditTemplate>
+                                    </RadzenGridColumn>
+                                    <RadzenGridColumn TItem="Jemaat" Title="">
+                                        <Template Context="item">
+                                            <RadzenButton Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Success" Icon="save"/>
+                                            <RadzenButton Visible="@(item.Id<=0)" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Danger" Icon="remove"/>
+                                        </Template>
+                                    </RadzenGridColumn>
+                                </Columns>
+                            </RadzenGrid>
+                        </ChildContent>
+                    </Radzen.Blazor.RadzenFieldset>
+                </RadzenStepsItem>
+                <RadzenStepsItem Text="Selesai" Disabled="@(Model.Jemaat==null || Model.Jemaat.Count<=0)">
+                    <h3>Anggota Keluarga</h3>
+                </RadzenStepsItem>
+            </Steps>
+        </RadzenSteps>
+    </div>
+</div>
+
+
+@code {
+    Keluarga Model = new Keluarga() { Jemaat = new List<Jemaat>() { new Jemaat() {  HubunganKeluarga = HubunganKeluarga.KepalaKeluarga, StatusPernikahan=true } } };
+    IEnumerable<Rayon> rayons;
+    IEnumerable<Pekerjaan> pekerjaans;
+    protected override async Task OnInitializedAsync()
+    {
+        var canceltoken = new System.Threading.CancellationTokenSource();
+        rayons = await Http.GetFromJsonAsync<IEnumerable<Rayon>>("/api/rayon", canceltoken.Token);
+        pekerjaans = await Http.GetFromJsonAsync<IEnumerable<Pekerjaan>>("/api/pekerjaan", canceltoken.Token);
+    }
+
+
+    bool IsNotCompleteModel()
+    {
+
+        if (Model.KepalaKeluarga == null || string.IsNullOrEmpty(Model.Alamat) || string.IsNullOrEmpty(Model.NomorKartuKeluarga) || string.IsNullOrEmpty(Model.Telepon))
+            return true;
+        if (Model.KepalaKeluarga == null || Model.Rayon == null)
+            return true;
+
+        if (string.IsNullOrEmpty(Model.KepalaKeluarga.Nama) || Model.KepalaKeluarga.Pekerjaan == null || Model.KepalaKeluarga.TanggalLahir==null)
+            return true;
+
+
+        return false;
+    }
+
+
+    void OnChange(int index)
+    {
+
+    }
+}

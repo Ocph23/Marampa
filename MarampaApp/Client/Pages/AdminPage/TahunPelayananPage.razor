@@ -1,0 +1,192 @@
+﻿@page "/admin/tahunpelayanan"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MarampaApp.Shared
+
+
+
+@attribute [Authorize]
+@inject HttpClient Http
+@inject SweetAlertService Swal;
+
+
+
+<h3>Tahun Pelayanan</h3>
+<div class="row">
+    <div class="col-xl-6">
+
+        <RadzenTemplateForm Data="@Model" Submit="@(async (TahunPelayanan args) => { await OnSave(args); })">
+            <RadzenFieldset Text="Tahun Pelayanan Aktif">
+                @if (Model != null)
+                {
+                    <div class="row">
+                        <div class="col-md-4 align-items-center d-flex">
+                            <RadzenLabel Text="Tahun Pelayanan" />
+                        </div>
+                        <div class="col-md-8">
+                            <RadzenTextBox style="width: 100%;" Value="@Model.Tahun" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 align-items-center d-flex">
+                            <RadzenLabel Text="Mulai" />
+                        </div>
+                        <div class="col-md-8">
+                            <Radzen.Blazor.RadzenDatePicker style="width: 100%;" @bind-Value="Model.Mulai" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 align-items-center d-flex">
+                            <RadzenLabel Text="Sampai" />
+                        </div>
+                        <div class="col-md-8">
+                            <Radzen.Blazor.RadzenDatePicker style="width: 100%;" @bind-Value="Model.Sampai" />
+                        </div>
+                    </div>
+                    <div class="row justify-content-end">
+                        <div class="col-md-12 d-flex align-items-end justify-content-end" style="margin-top: 16px;">
+                            <RadzenButton Visible="@(IsCanCreateNew())" ButtonStyle="ButtonStyle.Warning" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" @onclick="@OnCreateNew" />
+                            <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save" />
+                        </div>
+                    </div>
+                }
+            </RadzenFieldset>
+        </RadzenTemplateForm>
+    </div>
+    <div class="col-xl-12" style="margin-top:20px">
+        <Radzen.Blazor.RadzenFieldset AllowCollapse="true" Expand=@(() => ViewHistoryData())>
+            <HeaderTemplate>
+                <span>
+                    <b>Histori</b>
+                </span>
+            </HeaderTemplate>
+            <ChildContent>
+                @if (sources != null)
+                {
+                    <RadzenGrid Data="@sources"
+                                AllowFiltering="true" AllowPaging="true" AllowSorting="true" TItem="TahunPelayanan" ColumnWidth="200px">
+                        <Columns>
+                            <RadzenGridColumn TItem="TahunPelayanan" Property="Tahun" Title="Tahun Pelayanan" />
+                            <RadzenGridColumn TItem="TahunPelayanan" Property="Mulai" Title="Mulai" />
+                            <RadzenGridColumn TItem="TahunPelayanan" Property="Sampai" Title="Mulai" />
+                            <RadzenGridColumn TItem="TahunPelayanan" Property="Aktif" Title="Aktif" />
+                        </Columns>
+                    </RadzenGrid>
+                }
+            </ChildContent>
+        </Radzen.Blazor.RadzenFieldset>
+    </div>
+</div>
+
+
+
+@code {
+    string controller = "/api/tahunpelayanan";
+    private TahunPelayanan Model;
+
+
+    private TahunPelayanan[] sources;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var responseMessage = await Http.GetAsync($"{controller}/aktif");
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var data = await HttpHelper.GetResult<TahunPelayanan>(responseMessage);
+                if (data == null)
+                {
+                    Model = new TahunPelayanan() { Aktif = true, Mulai = DateTime.Now, Sampai = DateTime.Now.AddYears(1) };
+                }
+                else
+                {
+                    Model = data;
+                }
+                await InvokeAsync(() => StateHasChanged());
+            }
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+
+    bool IsCanCreateNew()
+    {
+        var result = false;
+        if (Model == null)
+            result = false;
+        else
+            result = Model.Sampai.Date <= DateTime.Now ? true : false;
+        return result;
+    }
+
+
+    Task OnCreateNew()
+    {
+        Model = new TahunPelayanan() { Aktif = true, Mulai = DateTime.Now, Sampai = DateTime.Now.AddYears(1) };
+        return Task.CompletedTask;
+    }
+
+    async Task OnSave(TahunPelayanan model)
+    {
+        try
+        {
+
+            var cancelToken = new System.Threading.CancellationTokenSource();
+
+            if (Model.Id <= 0)
+            {
+                var response = await Http.PostAsJsonAsync<TahunPelayanan>($"{controller}", Model, cancelToken.Token);
+                if (response.IsSuccessStatusCode)
+                {
+                    Model = await HttpHelper.GetResult<TahunPelayanan>(response);
+                    return;
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+            else
+            {
+                var response = await Http.PutAsJsonAsync<TahunPelayanan>($"api/TahunPelayanan/{Model.Id}", Model, cancelToken.Token);
+                if (response.IsSuccessStatusCode)
+                {
+                    var saved = await HttpHelper.GetResult<bool>(response);
+                    if (saved)
+                    {
+                        await Swal.FireAsync("Success", "Data Berhasil Disimpan !", SweetAlertIcon.Success);
+                    }
+                    return;
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+        }
+
+    }
+
+    async Task ViewHistoryData()
+    {
+        var responseMessage = await Http.GetAsync($"{controller}");
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            sources = await HttpHelper.GetResult<TahunPelayanan[]>(responseMessage);
+        }
+
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+}
+
+

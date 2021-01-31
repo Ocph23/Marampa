@@ -1,0 +1,173 @@
+﻿@page "/admin/gereja"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+
+
+
+@attribute [Authorize]
+@inject HttpClient Http
+@inject SweetAlertService Swal;
+
+
+
+@if (Model == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenTemplateForm Data="@Model" Submit="@(async (Gereja args) => { await OnSave(args); })">
+        <div class="row">
+            <div class="col-md-6">
+                <RadzenFieldset>
+                    <HeaderTemplate>
+                        <span><b>INFORMASI GEREJA</b></span>
+                    </HeaderTemplate>
+                    <ChildContent>
+                        <div class="row">
+                            <div class="col-md-4 align-items-center d-flex">
+                                <RadzenLabel Text="Nama Gereja" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="Model.Nama" />
+                                <ValidationMessage For="() => Model.Nama" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 align-items-center d-flex">
+                                <RadzenLabel Text="Sinode" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="Model.Sinode" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 align-items-center d-flex">
+                                <RadzenLabel Text="Klasis" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="Model.Klasis" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 align-items-center d-flex">
+                                <RadzenLabel Text="Telepon" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="Model.Telepon" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 align-items-center d-flex">
+                                <RadzenLabel Text="Email" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="Model.Email" />
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-4 align-items-center d-flex">
+                                <RadzenLabel Text="Website" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="Model.Website" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 align-items-center d-flex">
+                                <RadzenLabel Text="Alamat" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextArea style="width: 100%;" @bind-Value="Model.Alamat" />
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-end">
+                            <div class="col-md-12 d-flex align-items-end justify-content-end" style="margin-top: 16px;">
+                                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Simpan" />
+                            </div>
+                        </div>
+                    </ChildContent>
+                   
+                </RadzenFieldset>
+            </div>
+        </div>
+      
+    </RadzenTemplateForm>
+}
+
+@code {
+    private Gereja Model;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var data = await Http.GetFromJsonAsync<Gereja[]>("api/Gereja");
+            if (data.Count() > 0)
+                Model = data.FirstOrDefault();
+            else
+                Model = new Gereja();
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+
+    async Task OnSave(Gereja model)
+    {
+        try
+        {
+
+            var cancelToken = new System.Threading.CancellationTokenSource();
+
+            if (Model.Id <= 0)
+            {
+                var response = await Http.PostAsJsonAsync<Gereja>("api/Gereja", Model, cancelToken.Token);
+                if (response.IsSuccessStatusCode)
+                {
+                    Model = await HttpHelper.GetResult<Gereja>(response);
+                    return;
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+            else
+            {
+                var response = await Http.PutAsJsonAsync<Gereja>($"api/Gereja/{Model.Id}", Model, cancelToken.Token);
+                if (response.IsSuccessStatusCode)
+                {
+                    var saved = await HttpHelper.GetResult<bool>(response);
+                    if (saved)
+                    {
+                        await Swal.FireAsync("Success", "Data Berhasil Diseimpan !", SweetAlertIcon.Success);
+                    }
+                    return;
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+        }
+
+    }
+
+
+    void CreateNew()
+    {
+        //
+    }
+}
