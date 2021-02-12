@@ -19,9 +19,7 @@ namespace MarampaApp.Models
 
         public StatusJemaat StatusJemaat { get; set; }
 
-        public Keluarga Keluarga { get; set; }
-
-        public Pekerjaan Pekerjaan { get; set; }
+       
 
         public bool StatusPernikahan { get; set; }
 
@@ -29,6 +27,9 @@ namespace MarampaApp.Models
         public Nikah Nikah { get; set; }
         public Baptis Baptis { get; set; }
         public Sidi Sidi { get; set; }
+        public Pekerjaan Pekerjaan { get; set; }
+         public Keluarga Keluarga { get; set; }
+
 
     }
 }
