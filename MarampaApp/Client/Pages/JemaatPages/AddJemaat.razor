@@ -1,0 +1,369 @@
+﻿@page  "/keluarga/addanggota/{idkeluarga}"
+@page  "/jemaat/anggota/{id}"
+
+
+@attribute [Authorize]
+@inject HttpClient Http
+@inject SweetAlertService Swal;
+@inject NavigationManager nav;
+
+<RadzenFieldset Text="Data Jemaat">
+    <Radzen.Blazor.RadzenTemplateForm Data="Model">
+        <div class="row">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="NIK" />
+            </div>
+            <div class="col-md-8">
+                <RadzenTextBox style="width: 100%;" @bind-Value="Model.NIK" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Nama" />
+            </div>
+            <div class="col-md-8">
+                <RadzenTextBox style="width: 100%;" @bind-Value="Model.Nama" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Jenis Kelamin" />
+            </div>
+            <div class="col-md-8">
+                <RadzenRadioButtonList @bind-Value=@Model.JenisKelamin
+                                       TValue="JenisKelamin">
+                    <Items>
+                        <RadzenRadioButtonListItem Text="Pria" Value="JenisKelamin.Pria" />
+                        <RadzenRadioButtonListItem Text="Wanita" Value="JenisKelamin.Wanita" />
+                    </Items>
+                </RadzenRadioButtonList>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Tanggal Lahir" />
+            </div>
+            <div class="col-md-8">
+                <RadzenDatePicker style="width: 100%;"
+                                  @bind-Value="Model.TanggalLahir" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Status Perkawinan" />
+            </div>
+            <div class="col-md-8">
+                <RadzenRadioButtonList @bind-Value=@Model.StatusPernikahan
+                                       TValue="Boolean">
+                    <Items>
+                        <RadzenRadioButtonListItem Text="Kawin" Value="true" />
+                        <RadzenRadioButtonListItem Text="Belum" Value="false" />
+                    </Items>
+                </RadzenRadioButtonList>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Pekerjaan" />
+            </div>
+            <div class="col-md-8">
+                <RadzenDropDown Data="pekerjaans" TextProperty="Nama" style="width: 100%;"
+                                TValue="Pekerjaan" @bind-Value="Model.Pekerjaan" />
+            </div>
+        </div>
+        <div class="row" style="margin:10px; display: flex; justify-content: flex-end;">
+            <Radzen.Blazor.RadzenButton Style="height: 45px;" Text="Simpan" Click="SaveDataJemaat" ButtonStyle="ButtonStyle.Success" />
+        </div>
+
+    </Radzen.Blazor.RadzenTemplateForm>
+</RadzenFieldset>
+
+@if (Model.Baptis != null)
+{
+
+    <RadzenFieldset Text="Data Baptis">
+        <Radzen.Blazor.RadzenTemplateForm Data="Model.Baptis">
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Baptis.NomorSurat" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Tanggal Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenDatePicker style="width: 100%;" @bind-Value="Model.Baptis.Tanggal" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Gereja/Tempat" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Baptis.Tempat" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Baptis.Pendeta" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextArea style="width: 100%;" @bind-Value="Model.Baptis.Keterangan" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Terverfikasi" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenLabel Text="Ya" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextArea style="width: 100%;" @bind-Value="Model.Baptis.Keterangan" />
+                </div>
+            </div>
+            <div class="row" style="margin:10px; display: flex; justify-content: flex-end;">
+                <Radzen.Blazor.RadzenButton Style="height: 45px;" Text="Simpan" Click="SaveDataBaptis" ButtonStyle="ButtonStyle.Success" />
+            </div>
+
+        </Radzen.Blazor.RadzenTemplateForm>
+    </RadzenFieldset>
+}
+
+
+
+@if (Model.Sidi != null)
+{
+
+    <RadzenFieldset Text="Data Sidi">
+        <Radzen.Blazor.RadzenTemplateForm Data="Model.Sidi">
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Sidi.NomorSurat" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Tanggal Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenDatePicker style="width: 100%;" @bind-Value="Model.Sidi.Tanggal" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Gereja/Tempat" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Sidi.Tempat" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Sidi.Pendeta" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextArea style="width: 100%;" @bind-Value="Model.Sidi.Keterangan" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Terverfikasi" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenLabel Text="Ya" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextArea style="width: 100%;" @bind-Value="Model.Baptis.Keterangan" />
+                </div>
+            </div>
+            <div class="row" style="margin:10px; display: flex; justify-content: flex-end;">
+                <Radzen.Blazor.RadzenButton Style="height: 45px;" Click="SaveDataSidi" Text="Simpan" ButtonStyle="ButtonStyle.Success" />
+            </div>
+
+        </Radzen.Blazor.RadzenTemplateForm>
+    </RadzenFieldset>
+}
+
+
+@if (Model.Nikah != null)
+{
+
+    <RadzenFieldset Text="Data Nikah">
+        <Radzen.Blazor.RadzenTemplateForm Data="Model.Nikah">
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Nikah.NomorSurat" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Tanggal Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenDatePicker style="width: 100%;" @bind-Value="Model.Nikah.Created" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Gereja/Tempat" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Nikah.Tempat" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Baptis.Pendeta" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextArea style="width: 100%;" @bind-Value="Model.Nikah.Keterangan" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Terverfikasi" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenLabel Text="Ya" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Nomor Surat Baptis" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenTextArea style="width: 100%;" @bind-Value="Model.Nikah.Keterangan" />
+                </div>
+            </div>
+            <div class="row" style="margin:10px; display: flex; justify-content: flex-end;">
+                <Radzen.Blazor.RadzenButton Style="height: 45px;" Text="Simpan" Click="SaveDataNikah" ButtonStyle="ButtonStyle.Success" />
+            </div>
+
+        </Radzen.Blazor.RadzenTemplateForm>
+    </RadzenFieldset>
+}
+
+@code {
+    [Parameter] public string idkeluarga { get; set; }
+    [Parameter] public string id { get; set; }
+
+    public Jemaat Model { get; set; } = new Jemaat();
+    public IEnumerable<Pekerjaan> pekerjaans;
+    public IEnumerable<Rayon> rayons;
+
+    int IDKeluarga { get; set; }
+    int IdJemaat { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+      
+
+        var canceltoken = new System.Threading.CancellationTokenSource();
+        var rayonResponse = await Http.GetAsync("/api/rayon", canceltoken.Token);
+        if (rayonResponse.IsSuccessStatusCode)
+            rayons = await HttpHelper.GetResult<IEnumerable<Rayon>>(rayonResponse);
+
+        var responsePekerjaan = await Http.GetAsync("/api/pekerjaan", canceltoken.Token);
+        if (responsePekerjaan.IsSuccessStatusCode)
+            pekerjaans = await HttpHelper.GetResult<IEnumerable<Pekerjaan>>(responsePekerjaan);
+
+        if (!string.IsNullOrEmpty(idkeluarga))
+        {
+            IDKeluarga = Convert.ToInt32(idkeluarga);
+        }
+
+        if (!string.IsNullOrEmpty(id))
+        {
+            IdJemaat = Convert.ToInt32(id);
+            Console.WriteLine(IdJemaat);
+            var responseJemaat = await Http.GetAsync("/api/jemaat/"+IdJemaat, canceltoken.Token);
+            if (responsePekerjaan.IsSuccessStatusCode)
+                Model = await HttpHelper.GetResult<Jemaat>(responsePekerjaan);
+        }
+                
+    }
+
+
+
+    public Task SaveDataJemaat()
+    {
+        Model.Baptis = new Baptis();
+        return Task.CompletedTask;
+    }
+
+
+    public Task SaveDataBaptis()
+    {
+        Model.Sidi = new Sidi();
+        return Task.CompletedTask;
+    }
+
+
+    public Task SaveDataSidi()
+    {
+        Model.Nikah = new Nikah();
+        return Task.CompletedTask;
+    }
+
+    public Task SaveDataNikah()
+    {
+        Model.Nikah = new Nikah();
+        return Task.CompletedTask;
+    }
+}

@@ -22,6 +22,7 @@ namespace MarampaApp.Services
         public Task<IEnumerable<Keluarga>> Get()
         {
             var result = _dbContext.Keluarga
+            .Include(x=>x.Rayon)
             .Include(x => x.Jemaat).Where(t => t.Jemaat.Any(t => t.HubunganKeluarga == HubunganKeluarga.KepalaKeluarga))
             .AsEnumerable();
             return Task.FromResult(result);
@@ -32,7 +33,8 @@ namespace MarampaApp.Services
         {
             return Task.FromResult(
                 _dbContext.Keluarga
-                .Include(x => x.Jemaat)
+                .Include(x=>x.Rayon)
+                .Include(x => x.Jemaat).ThenInclude(x=>x.Pekerjaan)
                 .SingleOrDefault(x => x.Id == id));
         }
 
@@ -50,6 +52,12 @@ namespace MarampaApp.Services
                     kepala.HubunganKeluarga = HubunganKeluarga.KepalaKeluarga;
                     _dbContext.Entry(model.Rayon).State = Microsoft.EntityFrameworkCore.EntityState.Unchanged;
                     _dbContext.Keluarga.Add(model);
+
+                    foreach (var item in model.Jemaat)
+                    {
+                        _dbContext.Entry(item.Pekerjaan).State = Microsoft.EntityFrameworkCore.EntityState.Unchanged;
+                    }
+
                     await _dbContext.SaveChangesAsync();
                     return model;
                 }

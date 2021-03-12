@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace MarampaApp.Models
 {
     public class Keluarga : Entity
     {
         public string NomorKartuKeluarga { get; set; }
-
-        [NotMapped]
-        public Jemaat KepalaKeluarga => Jemaat != null ? Jemaat.SingleOrDefault(x => x.HubunganKeluarga == HubunganKeluarga.KepalaKeluarga) : null;
 
         public ICollection<Jemaat> Jemaat { get; set; }
 
@@ -26,6 +24,7 @@ namespace MarampaApp.Models
 
         public bool Aktif { get; set; } = true;
 
+        public Jemaat KepalaKeluarga => Jemaat != null ? Jemaat.SingleOrDefault(x => x.HubunganKeluarga == HubunganKeluarga.KepalaKeluarga) : null;
 
     }
 }

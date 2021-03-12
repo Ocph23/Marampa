@@ -1,20 +1,24 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace MarampaApp.Client
 {
     public static class HttpHelper
     {
+        static 	JsonSerializerOptions jsonOptions = new()
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    PropertyNamingPolicy= JsonNamingPolicy.CamelCase
+                };
 
         public static StringContent GenerateHttpContent(object data)
         {
-            var json = JsonConvert.SerializeObject(data);
+            var json = JsonSerializer.Serialize(data,jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             return content;
         }
@@ -32,7 +36,7 @@ namespace MarampaApp.Client
 
                 if (content.Contains("message"))
                 {
-                    var error = JsonConvert.DeserializeObject<ErrorMessage>(content);
+                    var error = JsonSerializer.Deserialize<ErrorMessage>(content,jsonOptions);
                     return error.Message;
                 }
                 return content;
@@ -55,8 +59,8 @@ namespace MarampaApp.Client
 
                 if (string.IsNullOrEmpty(content))
                     throw new SystemException("Data Tidak Ada");
-
-                var data = JsonConvert.DeserializeObject<T>(content);
+                Console.WriteLine(content);
+                var data = JsonSerializer.Deserialize<T>(content, jsonOptions);
                 return data;
             }
             catch (Exception ex)
@@ -85,7 +89,7 @@ namespace MarampaApp.Client
                 string stringContent = await response.Content.ReadAsStringAsync();
                 if (string.IsNullOrEmpty(stringContent))
                     return default;
-                var result = JsonConvert.DeserializeObject<T>(stringContent);
+                var result = JsonSerializer.Deserialize<T>(stringContent);
                 return result;
             }
             catch (Exception ex)
