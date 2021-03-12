@@ -16,6 +16,7 @@ namespace MarampaApp.Models
         public string Tempat { get; set; }
         public DateTime Tanggal { get; set; }
         public bool Terverifkasi { get; set; }
+
         public Jemaat Jemaat { get; set; }
 
     }

@@ -1,12 +1,9 @@
 @page "/keluarga/details/{id}"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using System.Threading
-
 
 @attribute [Authorize]
 @inject HttpClient Http
 @inject SweetAlertService Swal;
+@inject NavigationManager nav;
 
 
 <h3>Detail Keluarga</h3>
@@ -94,6 +91,7 @@
                         <ChildContent>
                             <div style="margin-bottom:10px; display:flex;justify-content:flex-end">
                                 <RadzenButton Size="ButtonSize.Medium" Icon="add" ButtonStyle="ButtonStyle.Success"
+                                              Click="AddAnggotaKeluarga"
                                     Style="text-align:right" />
                             </div>
                             <RadzenGrid Data="@Model.Jemaat" AllowFiltering="true" AllowPaging="true"
@@ -118,20 +116,17 @@
                                                 TValue="HubunganKeluarga" @bind-Value="item.HubunganKeluarga" />
                                         </EditTemplate>
                                     </RadzenGridColumn>
-                                    <RadzenGridColumn TItem="Jemaat" Property="StatusPernikahan" Title="Kawin">
+                                    <RadzenGridColumn TItem="Jemaat" Property="Kawin" Title="Kawin">
+                                    </RadzenGridColumn>
+                                    <RadzenGridColumn TItem="Jemaat" Property="Umur" Title="Umur">
                                         <EditTemplate Context="item">
-                                            <RadzenCheckBox @bind-Value="item.StatusPernikahan" />
+                                            @item.TanggalLahir
                                         </EditTemplate>
                                     </RadzenGridColumn>
-                                    <RadzenGridColumn TItem="Jemaat" Property="TanggalLahir" Title="Tanggal Lahir">
-                                        <EditTemplate Context="item">
-                                            <RadzenDatePicker @bind-Value="item.TanggalLahir" />
-                                        </EditTemplate>
-                                    </RadzenGridColumn>
-                                    <RadzenGridColumn TItem="Jemaat" Title="">
+                                    <RadzenGridColumn TItem="Jemaat" Title="" Width="75">
                                         <Template Context="item">
-                                            <RadzenButton Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Success"
-                                                Icon="save" />
+                                            <RadzenButton Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Warning" Click="@(()=>Edit(item))"
+                                                Icon="edit" />
                                             <RadzenButton Visible="@(item.Id<=0)" Size="ButtonSize.Small"
                                                 ButtonStyle="ButtonStyle.Danger" Icon="remove" />
                                         </Template>
@@ -155,7 +150,7 @@
 
 @code {
 
-     [Parameter] public string Id {get;set;}
+    [Parameter] public string Id {get;set;}
     string controller = "/api/keluarga";
     Keluarga Model ;
     IEnumerable<Rayon> rayons;
@@ -167,7 +162,7 @@
         var rayonResponse = await Http.GetAsync("/api/rayon", canceltoken.Token);
         if(rayonResponse.IsSuccessStatusCode)
             rayons = await HttpHelper.GetResult<IEnumerable<Rayon>>(rayonResponse);
-        
+
         var responsePekerjaan = await Http.GetAsync("/api/pekerjaan", canceltoken.Token);
         if(responsePekerjaan.IsSuccessStatusCode)
             pekerjaans = await HttpHelper.GetResult<IEnumerable<Pekerjaan>>(responsePekerjaan);
@@ -218,8 +213,21 @@
         }
         catch (System.Exception ex)
         {
-                await Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+            await Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
         }
+    }
+
+
+    void AddAnggotaKeluarga()
+    {
+        nav.NavigateTo($"keluarga/addanggota/{Id}");
+    }
+
+
+
+    void Edit (Jemaat model)
+    {
+        nav.NavigateTo($"/jemaat/anggota/{model.Id}", true);
     }
 
 }

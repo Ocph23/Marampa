@@ -19,9 +19,11 @@ namespace MarampaApp.Models
 
         public StatusJemaat StatusJemaat { get; set; }
 
-       
-
         public bool StatusPernikahan { get; set; }
+
+
+        public string Kawin => StatusPernikahan ? "Kawin" : "Belum";
+        public int Umur=> TanggalLahir==null ? 0: DateTime.Now.Year-TanggalLahir.Value.Year;
 
 
         public Nikah Nikah { get; set; }
