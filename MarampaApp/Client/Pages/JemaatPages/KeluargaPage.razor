@@ -22,7 +22,8 @@
                 <RadzenButton Size="ButtonSize.Medium" Click="@(()=>nav.NavigateTo("/keluarga/addkeluarga"))" Icon="add" ButtonStyle="ButtonStyle.Success" Style="text-align:right" />
             </div>
             <RadzenGrid Data="@sources"
-                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" TItem="TahunPelayanan" ColumnWidth="200px">
+                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" 
+                        TItem="TahunPelayanan" ColumnWidth="200px">
                 <Columns>
                     <RadzenGridColumn TItem="TahunPelayanan" Property="Tahun" Title="Tahun Pelayanan" />
                     <RadzenGridColumn TItem="TahunPelayanan" Property="Mulai" Title="Mulai" />
