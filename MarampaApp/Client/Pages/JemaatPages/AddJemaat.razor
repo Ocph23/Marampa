@@ -112,7 +112,7 @@
             </div>
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Nomor Surat Baptis" />
+                    <RadzenLabel Text="Nama Pendeta" />
                 </div>
                 <div class="col-md-8">
                     <RadzenTextBox style="width: 100%;" @bind-Value="Model.Baptis.Pendeta" />
@@ -120,7 +120,7 @@
             </div>
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Nomor Surat Baptis" />
+                    <RadzenLabel Text="Keterangan" />
                 </div>
                 <div class="col-md-8">
                     <RadzenTextArea style="width: 100%;" @bind-Value="Model.Baptis.Keterangan" />
@@ -132,18 +132,10 @@
                     <RadzenLabel Text="Terverfikasi" />
                 </div>
                 <div class="col-md-8">
-                    <RadzenLabel Text="Ya" />
+                    <RadzenCheckBox @bind-Value=@Model.Baptis.Terverifkasi  />
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Nomor Surat Baptis" />
-                </div>
-                <div class="col-md-8">
-                    <RadzenTextArea style="width: 100%;" @bind-Value="Model.Baptis.Keterangan" />
-                </div>
-            </div>
+           
             <div class="row" style="margin:10px; display: flex; justify-content: flex-end;">
                 <Radzen.Blazor.RadzenButton Style="height: 45px;" Text="Simpan" Click="SaveDataBaptis" ButtonStyle="ButtonStyle.Success" />
             </div>
@@ -300,9 +292,11 @@
 }
 
 @code {
+
     [Parameter] public string idkeluarga { get; set; }
     [Parameter] public string id { get; set; }
 
+    string controller = "/api/jemaat";
     public Jemaat Model { get; set; } = new Jemaat();
     public IEnumerable<Pekerjaan> pekerjaans;
     public IEnumerable<Rayon> rayons;
@@ -312,8 +306,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-      
-
         var canceltoken = new System.Threading.CancellationTokenSource();
         var rayonResponse = await Http.GetAsync("/api/rayon", canceltoken.Token);
         if (rayonResponse.IsSuccessStatusCode)
@@ -332,38 +324,83 @@
         {
             IdJemaat = Convert.ToInt32(id);
             Console.WriteLine(IdJemaat);
-            var responseJemaat = await Http.GetAsync("/api/jemaat/"+IdJemaat, canceltoken.Token);
+            var responseJemaat = await Http.GetAsync($"{controller}/{IdJemaat}", canceltoken.Token);
             if (responsePekerjaan.IsSuccessStatusCode)
-                Model = await HttpHelper.GetResult<Jemaat>(responsePekerjaan);
+                {
+                    Model = await HttpHelper.GetResult<Jemaat>(responseJemaat);
+                    if(Model.Baptis==null){
+                        Model.Baptis= new Baptis();
+                    }else if(Model.Sidi==null){
+                        Model.Sidi=new Sidi();
+                    }else if(Model.Nikah==null){
+                        Model.Nikah=new Nikah();
+                    }
+                }
         }
                 
     }
 
-
-
-    public Task SaveDataJemaat()
+    public async Task SaveDataJemaat()
     {
-        Model.Baptis = new Baptis();
-        return Task.CompletedTask;
+        var canceltoken = default(CancellationToken);
+        var responseJemaat = await Http.GetAsync($"{controller}/{IdJemaat}", canceltoken);
+    }
+
+    public async Task SaveDataBaptis()
+    {
+        try
+        {
+            var url = $"{controller}/baptis/{IdJemaat}";
+            var response = await Http.PutAsync(url, HttpHelper.GenerateHttpContent(Model.Baptis), default(CancellationToken));
+            if(response.IsSuccessStatusCode){
+                Swal.FireAsync("Info","Berhasil !", SweetAlertIcon.Success); 
+                Model.Sidi= new Sidi();
+            } else{
+               throw new SystemException(await HttpHelper.Error(response));
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Swal.FireAsync("Error",ex.Message, SweetAlertIcon.Error); 
+        }
+        
     }
 
 
-    public Task SaveDataBaptis()
+    public async Task SaveDataSidi()
     {
-        Model.Sidi = new Sidi();
-        return Task.CompletedTask;
+        try
+        {
+            var url = $"{controller}/sidi/{IdJemaat}";
+            var response = await Http.PutAsync(url, HttpHelper.GenerateHttpContent(Model.Sidi), default(CancellationToken));
+            if(response.IsSuccessStatusCode){
+                Swal.FireAsync("Info","Berhasil !", SweetAlertIcon.Success); 
+                Model.Sidi= new Sidi();
+            } else{
+               throw new SystemException(await HttpHelper.Error(response));
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Swal.FireAsync("Error",ex.Message, SweetAlertIcon.Error); 
+        }
     }
 
-
-    public Task SaveDataSidi()
+    public async Task SaveDataNikah()
     {
-        Model.Nikah = new Nikah();
-        return Task.CompletedTask;
-    }
-
-    public Task SaveDataNikah()
-    {
-        Model.Nikah = new Nikah();
-        return Task.CompletedTask;
+      try
+        {
+            var url = $"{controller}/nikah/{IdJemaat}";
+            var response = await Http.PutAsync(url, HttpHelper.GenerateHttpContent(Model.Nikah), default(CancellationToken));
+            if(response.IsSuccessStatusCode){
+                Swal.FireAsync("Info","Berhasil !", SweetAlertIcon.Success); 
+            } else{
+               throw new SystemException(await HttpHelper.Error(response));
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Swal.FireAsync("Error",ex.Message, SweetAlertIcon.Error); 
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace MarampaApp.Server
 
         public IConfiguration Configuration { get; }
 
-       
+
         public void ConfigureServices(IServiceCollection services)
         {
 
@@ -42,9 +42,11 @@ namespace MarampaApp.Server
             services.AddAuthentication()
                 .AddIdentityServerJwt();
 
-            services.AddControllersWithViews().AddJsonOptions(o => {
+            services.AddControllersWithViews().AddJsonOptions(o =>
+            {
                 o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
                 o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                o.JsonSerializerOptions.MaxDepth = 0;
 
             });
             services.AddRazorPages();
@@ -54,6 +56,8 @@ namespace MarampaApp.Server
             services.AddScoped<RayonService>();
             services.AddScoped<PekerjaanService>();
             services.AddScoped<TahunPelayananService>();
+            services.AddScoped<JemaatService>();
+            services.AddScoped<DocumentService>();
 
         }
 

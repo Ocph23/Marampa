@@ -22,11 +22,17 @@ namespace MarampaApp.Controllers
             return Ok(await _jemaatService.Get());
         }
 
-
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            return Ok(await _jemaatService.Get(id));
+            try
+            {
+                return Ok(await _jemaatService.Get(id));
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -35,6 +41,20 @@ namespace MarampaApp.Controllers
             try
             {
                 var result = await _jemaatService.Post(model);
+                return Ok(result);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("baptis/{id}")]
+        public async Task<ActionResult<Baptis>> PutBaptis(int id, Baptis model)
+        {
+            try
+            {
+                var result = await _jemaatService.PutBaptis(id, model);
                 return Ok(result);
             }
             catch (System.Exception ex)

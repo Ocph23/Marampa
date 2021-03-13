@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MarampaApp.Models
 {
@@ -13,6 +14,9 @@ namespace MarampaApp.Models
         public DateTime Updated { get; set; }
 
         public string Berkas { get; set; }
+
+        [NotMapped]
+        public byte[] DataBerkas { get; set; }
 
     }
 }
