@@ -267,7 +267,7 @@
 
 @code {
 
-   
+
 
     string controller = "/api/keluarga";
     Keluarga Model = new Keluarga()
@@ -282,7 +282,17 @@
     {
         var canceltoken = new System.Threading.CancellationTokenSource();
         rayons = await Http.GetFromJsonAsync<IEnumerable<Rayon>>("/api/rayon", canceltoken.Token);
-        pekerjaans = await Http.GetFromJsonAsync<IEnumerable<Pekerjaan>>("/api/pekerjaan", canceltoken.Token);
+
+
+        var responseMessage = await Http.GetAsync($"/api/pekerjaan");
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            var data = await HttpHelper.GetResult<IEnumerable<Pekerjaan>>(responseMessage);
+            if (data != null)
+            {
+                pekerjaans= data.ToList();
+            }
+        }
     }
 
 
@@ -326,7 +336,7 @@
         }
         catch (System.Exception ex)
         {
-                await Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+            await Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -13,8 +14,9 @@ namespace MarampaApp.Client
         static 	JsonSerializerOptions jsonOptions = new()
                 {
                     ReferenceHandler = ReferenceHandler.Preserve,
-                    PropertyNamingPolicy= JsonNamingPolicy.CamelCase
-                };
+                    PropertyNamingPolicy= JsonNamingPolicy.CamelCase    ,
+                    MaxDepth = 0, WriteIndented  =true
+    };
 
         public static StringContent GenerateHttpContent(object data)
         {
@@ -59,7 +61,7 @@ namespace MarampaApp.Client
 
                 if (string.IsNullOrEmpty(content))
                     throw new SystemException("Data Tidak Ada");
-                Console.WriteLine(content);
+                Debug.WriteLine(content);
                 var data = JsonSerializer.Deserialize<T>(content, jsonOptions);
                 return data;
             }

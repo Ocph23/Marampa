@@ -29,7 +29,7 @@ namespace MarampaApp.Server
 
             var constring = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(constring));
+                options.UseNpgsql(constring));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -45,7 +45,8 @@ namespace MarampaApp.Server
             services.AddControllersWithViews().AddJsonOptions(o => {
                 o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
                 o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-
+                o.JsonSerializerOptions.MaxDepth = 0;
+                o.JsonSerializerOptions.WriteIndented= true;
             });
             services.AddRazorPages();
 
