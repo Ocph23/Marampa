@@ -13,4 +13,7 @@ namespace MarampaApp
     public enum StatusJemaat { Aktif, Pindah, Meninggal }
 
 
+    public enum JenisDokumen { Baptis, Sidi, Nikah, Kematian }
+
+
 }

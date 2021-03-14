@@ -123,7 +123,7 @@
                                             @item.TanggalLahir
                                         </EditTemplate>
                                     </RadzenGridColumn>
-                                    <RadzenGridColumn TItem="Jemaat" Title="" Width="75">
+                                    <RadzenGridColumn TItem="Jemaat" Title="" Width="75px">
                                         <Template Context="item">
                                             <RadzenButton Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Warning" Click="@(()=>Edit(item))"
                                                 Icon="edit" />
@@ -227,7 +227,7 @@
 
     void Edit (Jemaat model)
     {
-        nav.NavigateTo($"/jemaat/anggota/{model.Id}", true);
+        nav.NavigateTo($"/jemaat/anggota/{model.Id}");
     }
 
 }

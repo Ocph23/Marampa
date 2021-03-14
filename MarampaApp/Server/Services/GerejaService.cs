@@ -11,9 +11,7 @@ namespace MarampaApp.Services
 {
     public class GerejaService
     {
-
         private ApplicationDbContext _dbContext;
-
         public GerejaService(ApplicationDbContext db)
         {
             _dbContext = db;
