@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MarampaApp.Server.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class EntityWithBerkas : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -80,8 +80,7 @@ namespace MarampaApp.Server.Migrations
                     Email = table.Column<string>(type: "text", nullable: false),
                     Website = table.Column<string>(type: "text", nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Berkas = table.Column<string>(type: "text", nullable: true)
+                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -97,8 +96,7 @@ namespace MarampaApp.Server.Migrations
                     Nama = table.Column<string>(type: "text", nullable: true),
                     Deskripsi = table.Column<string>(type: "text", nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Berkas = table.Column<string>(type: "text", nullable: true)
+                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -135,8 +133,7 @@ namespace MarampaApp.Server.Migrations
                     Sampai = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Aktif = table.Column<bool>(type: "boolean", nullable: false),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Berkas = table.Column<string>(type: "text", nullable: true)
+                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -323,8 +320,7 @@ namespace MarampaApp.Server.Migrations
                     SekertarisId = table.Column<int>(type: "integer", nullable: true),
                     BendaharaId = table.Column<int>(type: "integer", nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Berkas = table.Column<string>(type: "text", nullable: true)
+                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -344,8 +340,7 @@ namespace MarampaApp.Server.Migrations
                     Telepon = table.Column<string>(type: "text", nullable: true),
                     Aktif = table.Column<bool>(type: "boolean", nullable: false),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Berkas = table.Column<string>(type: "text", nullable: true)
+                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -374,8 +369,7 @@ namespace MarampaApp.Server.Migrations
                     PekerjaanId = table.Column<int>(type: "integer", nullable: true),
                     KeluargaId = table.Column<int>(type: "integer", nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Berkas = table.Column<string>(type: "text", nullable: true)
+                    Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -474,11 +468,10 @@ namespace MarampaApp.Server.Migrations
                 column: "KeluargaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Jemaat_Id",
+                name: "IX_Jemaat_NIK",
                 table: "Jemaat",
                 column: "NIK",
-                unique: true,
-                filter: "NIK IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Jemaat_PekerjaanId",

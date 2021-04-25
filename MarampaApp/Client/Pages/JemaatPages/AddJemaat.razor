@@ -1,13 +1,15 @@
 ﻿@page  "/keluarga/addanggota/{idkeluarga}"
 @page  "/jemaat/anggota/{id}"
+@page  "/jemaat/addjemaat"
 
+@using System.IO
 
 @attribute [Authorize]
 @inject HttpClient Http
 @inject SweetAlertService Swal;
 @inject NavigationManager nav;
 
-<RadzenFieldset Text="Data Jemaat">
+<RadzenFieldset AllowCollapse="true" Text="Data Jemaat">
     <Radzen.Blazor.RadzenTemplateForm Data="Model">
         <div class="row">
             <div class="col-md-4 align-items-center d-flex">
@@ -45,10 +47,21 @@
                 <RadzenLabel Text="Tanggal Lahir" />
             </div>
             <div class="col-md-8">
-                <RadzenDatePicker style="width: 100%;"
+                <RadzenDatePicker DateFormat="dd/MM/yyyy" style="width: 100%;"
                                   @bind-Value="Model.TanggalLahir" />
             </div>
         </div>
+        @if (IsFamily)
+        {
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Hubungan Keluarga" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenDropDown Data="hubunganKeluargas" TValue="string" @bind-Value="Hubungan" style="width: 100%;" />
+                </div>
+            </div>
+        }
         <div class="row">
             <div class="col-md-4 align-items-center d-flex">
                 <RadzenLabel Text="Status Perkawinan" />
@@ -83,7 +96,7 @@
 @if (Model.Baptis != null)
 {
 
-    <RadzenFieldset Text="Data Baptis">
+    <RadzenFieldset AllowCollapse="true" Text="Data Baptis">
         <Radzen.Blazor.RadzenTemplateForm Data="Model.Baptis">
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
@@ -98,7 +111,7 @@
                     <RadzenLabel Text="Tanggal Baptis" />
                 </div>
                 <div class="col-md-8">
-                    <RadzenDatePicker style="width: 100%;" @bind-Value="Model.Baptis.Tanggal" />
+                    <RadzenDatePicker DateFormat="dd/MM/yyyy" style="width: 100%;" @bind-Value="Model.Baptis.Tanggal" />
                 </div>
             </div>
 
@@ -126,16 +139,29 @@
                     <RadzenTextArea style="width: 100%;" @bind-Value="Model.Baptis.Keterangan" />
                 </div>
             </div>
-
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Berkas" />
+                </div>
+                <div class="col-md-8">
+                    @if (!string.IsNullOrEmpty(Model.Baptis.Berkas))
+                    {
+                        <div>
+                            <RadzenLabel Text="@Model.Baptis.Berkas" />
+                        </div>
+                    }
+                    <InputFile OnChange="@LoadFiles" multiple />
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
                     <RadzenLabel Text="Terverfikasi" />
                 </div>
                 <div class="col-md-8">
-                    <RadzenCheckBox @bind-Value=@Model.Baptis.Terverifkasi  />
+                    <RadzenCheckBox @bind-Value=@Model.Baptis.Terverifkasi />
                 </div>
             </div>
-           
+
             <div class="row" style="margin:10px; display: flex; justify-content: flex-end;">
                 <Radzen.Blazor.RadzenButton Style="height: 45px;" Text="Simpan" Click="SaveDataBaptis" ButtonStyle="ButtonStyle.Success" />
             </div>
@@ -149,11 +175,11 @@
 @if (Model.Sidi != null)
 {
 
-    <RadzenFieldset Text="Data Sidi">
+    <RadzenFieldset AllowCollapse="true" Text="Data Sidi">
         <Radzen.Blazor.RadzenTemplateForm Data="Model.Sidi">
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Nomor Surat Baptis" />
+                    <RadzenLabel Text="Nomor Surat Sidi" />
                 </div>
                 <div class="col-md-8">
                     <RadzenTextBox style="width: 100%;" @bind-Value="Model.Sidi.NomorSurat" />
@@ -161,10 +187,10 @@
             </div>
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Tanggal Baptis" />
+                    <RadzenLabel Text="Tanggal Sidi" />
                 </div>
                 <div class="col-md-8">
-                    <RadzenDatePicker style="width: 100%;" @bind-Value="Model.Sidi.Tanggal" />
+                    <RadzenDatePicker DateFormat="dd/MM/yyyy" style="width: 100%;" @bind-Value="Model.Sidi.Tanggal" />
                 </div>
             </div>
 
@@ -178,7 +204,7 @@
             </div>
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Nomor Surat Baptis" />
+                    <RadzenLabel Text="Nama Pendeta" />
                 </div>
                 <div class="col-md-8">
                     <RadzenTextBox style="width: 100%;" @bind-Value="Model.Sidi.Pendeta" />
@@ -186,30 +212,37 @@
             </div>
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Nomor Surat Baptis" />
+                    <RadzenLabel Text="Keterangan/Catatan" />
                 </div>
                 <div class="col-md-8">
                     <RadzenTextArea style="width: 100%;" @bind-Value="Model.Sidi.Keterangan" />
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Berkas" />
+                </div>
+                <div class="col-md-8">
+                    @if (!string.IsNullOrEmpty(Model.Sidi.Berkas))
+                    {
+                        <div>
+                            <RadzenLabel Text="@Model.Sidi.Berkas" />
+                        </div>
+                    }
+                    <InputFile OnChange="@LoadSidiFiles" multiple />
+                </div>
+            </div>
+
 
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
                     <RadzenLabel Text="Terverfikasi" />
                 </div>
                 <div class="col-md-8">
-                    <RadzenLabel Text="Ya" />
+                    <RadzenCheckBox @bind-Value=@Model.Sidi.Terverifkasi />
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Nomor Surat Baptis" />
-                </div>
-                <div class="col-md-8">
-                    <RadzenTextArea style="width: 100%;" @bind-Value="Model.Baptis.Keterangan" />
-                </div>
-            </div>
             <div class="row" style="margin:10px; display: flex; justify-content: flex-end;">
                 <Radzen.Blazor.RadzenButton Style="height: 45px;" Click="SaveDataSidi" Text="Simpan" ButtonStyle="ButtonStyle.Success" />
             </div>
@@ -222,22 +255,31 @@
 @if (Model.Nikah != null)
 {
 
-    <RadzenFieldset Text="Data Nikah">
+    <RadzenFieldset AllowCollapse="true" Text="Data Nikah">
         <Radzen.Blazor.RadzenTemplateForm Data="Model.Nikah">
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Nomor Surat Baptis" />
+                    <RadzenLabel Text="Nomor Surat Nikah" />
                 </div>
                 <div class="col-md-8">
                     <RadzenTextBox style="width: 100%;" @bind-Value="Model.Nikah.NomorSurat" />
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Tanggal Baptis" />
+                    <RadzenLabel Text="Nama Pasangan" />
                 </div>
                 <div class="col-md-8">
-                    <RadzenDatePicker style="width: 100%;" @bind-Value="Model.Nikah.Created" />
+                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Nikah.Pasangan" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Tanggal Nikah" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenDatePicker DateFormat="dd/MM/yyyy" style="width: 100%;" @bind-Value="Model.Nikah.TanggalMenikah" />
                 </div>
             </div>
 
@@ -251,38 +293,43 @@
             </div>
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Nomor Surat Baptis" />
+                    <RadzenLabel Text="Nama Pendeta" />
                 </div>
                 <div class="col-md-8">
-                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Baptis.Pendeta" />
+                    <RadzenTextBox style="width: 100%;" @bind-Value="Model.Nikah.Pendeta" />
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Nomor Surat Baptis" />
+                    <RadzenLabel Text="Keterangan/Catatan" />
                 </div>
                 <div class="col-md-8">
                     <RadzenTextArea style="width: 100%;" @bind-Value="Model.Nikah.Keterangan" />
                 </div>
             </div>
-
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Berkas" />
+                </div>
+                <div class="col-md-8">
+                    @if (!string.IsNullOrEmpty(Model.Nikah.Berkas))
+                    {
+                        <div>
+                            <RadzenLabel Text="@Model.Nikah.Berkas" />
+                        </div>
+                    }
+                    <InputFile OnChange="@LoadNikahFiles" multiple />
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-4 align-items-center d-flex">
                     <RadzenLabel Text="Terverfikasi" />
                 </div>
                 <div class="col-md-8">
-                    <RadzenLabel Text="Ya" />
+                    <RadzenCheckBox @bind-Value=@Model.Nikah.Terverifkasi />
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-4 align-items-center d-flex">
-                    <RadzenLabel Text="Nomor Surat Baptis" />
-                </div>
-                <div class="col-md-8">
-                    <RadzenTextArea style="width: 100%;" @bind-Value="Model.Nikah.Keterangan" />
-                </div>
-            </div>
             <div class="row" style="margin:10px; display: flex; justify-content: flex-end;">
                 <Radzen.Blazor.RadzenButton Style="height: 45px;" Text="Simpan" Click="SaveDataNikah" ButtonStyle="ButtonStyle.Success" />
             </div>
@@ -295,14 +342,141 @@
 
     [Parameter] public string idkeluarga { get; set; }
     [Parameter] public string id { get; set; }
+    [Parameter] public string idjemaat { get; set; }
 
     string controller = "/api/jemaat";
     public Jemaat Model { get; set; } = new Jemaat();
     public IEnumerable<Pekerjaan> pekerjaans;
     public IEnumerable<Rayon> rayons;
+    bool IsFamily = true;
+
+    public IEnumerable<string> hubunganKeluargas = Enum.GetValues(typeof(HubunganKeluarga)).Cast<HubunganKeluarga>().Select(x => x.ToString());
 
     int IDKeluarga { get; set; }
     int IdJemaat { get; set; }
+    RadzenUpload upload;
+
+
+
+    int progress;
+    string info;
+
+    int customParameter = 1;
+
+
+    private Dictionary<IBrowserFile, string> loadedFiles =
+       new Dictionary<IBrowserFile, string>();
+    private long maxFileSize = 1024 * 50000;
+    private int maxAllowedFiles = 3;
+    private bool isLoading;
+    string exceptionMessage;
+
+
+    string hubungan = HubunganKeluarga.None.ToString();
+
+    public string Hubungan
+    {
+        get { return hubungan; }
+        set
+        {
+            hubungan = value;
+            if (Model != null)
+                Model.HubunganKeluarga = (HubunganKeluarga)Enum.Parse(typeof(HubunganKeluarga), value.ToString());
+        }
+    }
+
+
+    async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+        loadedFiles.Clear();
+        exceptionMessage = string.Empty;
+
+        try
+        {
+            foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+            {
+                using var reader =
+                    new StreamReader(file.OpenReadStream(maxFileSize));
+
+                Model.Baptis.DataBerkas = default(byte[]);
+                using (var memstream = new MemoryStream())
+                {
+                    await reader.BaseStream.CopyToAsync(memstream);
+                    Model.Baptis.DataBerkas = memstream.ToArray();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            exceptionMessage = ex.Message;
+        }
+
+        isLoading = false;
+    }
+
+
+    async Task LoadSidiFiles(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+        loadedFiles.Clear();
+        exceptionMessage = string.Empty;
+
+        try
+        {
+            foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+            {
+                using var reader =
+                    new StreamReader(file.OpenReadStream(maxFileSize));
+
+                Model.Sidi.DataBerkas = default(byte[]);
+                using (var memstream = new MemoryStream())
+                {
+                    await reader.BaseStream.CopyToAsync(memstream);
+                    Model.Sidi.DataBerkas = memstream.ToArray();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            exceptionMessage = ex.Message;
+        }
+
+        isLoading = false;
+    }
+
+
+    async Task LoadNikahFiles(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+        loadedFiles.Clear();
+        exceptionMessage = string.Empty;
+
+        try
+        {
+            foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+            {
+                using var reader =
+                    new StreamReader(file.OpenReadStream(maxFileSize));
+
+                Model.Nikah.DataBerkas = default(byte[]);
+                using (var memstream = new MemoryStream())
+                {
+                    await reader.BaseStream.CopyToAsync(memstream);
+                    Model.Nikah.DataBerkas = memstream.ToArray();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            exceptionMessage = ex.Message;
+        }
+
+        isLoading = false;
+    }
+
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -323,47 +497,120 @@
         if (!string.IsNullOrEmpty(id))
         {
             IdJemaat = Convert.ToInt32(id);
-            Console.WriteLine(IdJemaat);
             var responseJemaat = await Http.GetAsync($"{controller}/{IdJemaat}", canceltoken.Token);
             if (responsePekerjaan.IsSuccessStatusCode)
+            {
+                Model = await HttpHelper.GetResult<Jemaat>(responseJemaat);
+                if (Model.HubunganKeluarga == HubunganKeluarga.None)
+                    IsFamily = false;
+                if (Model.Baptis == null)
                 {
-                    Model = await HttpHelper.GetResult<Jemaat>(responseJemaat);
-                    if(Model.Baptis==null){
-                        Model.Baptis= new Baptis();
-                    }else if(Model.Sidi==null){
-                        Model.Sidi=new Sidi();
-                    }else if(Model.Nikah==null){
-                        Model.Nikah=new Nikah();
-                    }
+                    Model.Baptis = new Baptis();
                 }
+                else if (Model.Sidi == null)
+                {
+                    Model.Sidi = new Sidi();
+                }
+                else if (Model.Nikah == null)
+                {
+                    Model.Nikah = new Nikah();
+                }
+            }
         }
-                
+
+        if (IDKeluarga == 0 && IdJemaat == 0)
+        {
+            IsFamily = false;
+            Model.HubunganKeluarga = HubunganKeluarga.None;
+        }
+
     }
 
     public async Task SaveDataJemaat()
     {
-        var canceltoken = default(CancellationToken);
-        var responseJemaat = await Http.GetAsync($"{controller}/{IdJemaat}", canceltoken);
+
+        try
+        {
+
+            if (!string.IsNullOrEmpty(idkeluarga))
+            {
+                var url = $"api/keluarga/postanggota/{idkeluarga}";
+                var response = await Http.PostAsync(url, HttpHelper.GenerateHttpContent(Model), default(CancellationToken));
+                if (response.IsSuccessStatusCode)
+                {
+                    Swal.FireAsync("Info", "Berhasil !", SweetAlertIcon.Success);
+                    Model.Baptis = new Baptis();
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+            else if (!string.IsNullOrEmpty(id))
+            {
+                var url = $"{controller}/{id}";
+                var response = await Http.PutAsync(url, HttpHelper.GenerateHttpContent(Model), default(CancellationToken));
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await HttpHelper.GetResult<Jemaat>(response);
+                    Model.Id = data.Id;
+                    Swal.FireAsync("Info", "Berhasil !", SweetAlertIcon.Success);
+                    Model.Baptis = new Baptis();
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+            else {
+                var url = $"api/jemaat";
+                var response = await Http.PostAsync(url, HttpHelper.GenerateHttpContent(Model), default(CancellationToken));
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await HttpHelper.GetResult<Jemaat>(response);
+                    Model.Id = data.Id;
+                    Swal.FireAsync("Info", "Berhasil !", SweetAlertIcon.Success);
+                    Model.Baptis = new Baptis();
+                }
+                else
+                {
+                    throw new SystemException(await HttpHelper.Error(response));
+                }
+            }
+
+
+
+        }
+        catch (System.Exception ex)
+        {
+            Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
+        }
+
+
     }
 
     public async Task SaveDataBaptis()
     {
+
         try
         {
             var url = $"{controller}/baptis/{IdJemaat}";
             var response = await Http.PutAsync(url, HttpHelper.GenerateHttpContent(Model.Baptis), default(CancellationToken));
-            if(response.IsSuccessStatusCode){
-                Swal.FireAsync("Info","Berhasil !", SweetAlertIcon.Success); 
-                Model.Sidi= new Sidi();
-            } else{
-               throw new SystemException(await HttpHelper.Error(response));
+            if (response.IsSuccessStatusCode)
+            {
+                Swal.FireAsync("Info", "Berhasil !", SweetAlertIcon.Success);
+                Model.Sidi = new Sidi();
+            }
+            else
+            {
+                throw new SystemException(await HttpHelper.Error(response));
             }
         }
         catch (System.Exception ex)
         {
-            Swal.FireAsync("Error",ex.Message, SweetAlertIcon.Error); 
+            Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
         }
-        
+
     }
 
 
@@ -373,34 +620,40 @@
         {
             var url = $"{controller}/sidi/{IdJemaat}";
             var response = await Http.PutAsync(url, HttpHelper.GenerateHttpContent(Model.Sidi), default(CancellationToken));
-            if(response.IsSuccessStatusCode){
-                Swal.FireAsync("Info","Berhasil !", SweetAlertIcon.Success); 
-                Model.Sidi= new Sidi();
-            } else{
-               throw new SystemException(await HttpHelper.Error(response));
+            if (response.IsSuccessStatusCode)
+            {
+                Swal.FireAsync("Info", "Berhasil !", SweetAlertIcon.Success);
+                Model.Nikah = new Nikah();
+            }
+            else
+            {
+                throw new SystemException(await HttpHelper.Error(response));
             }
         }
         catch (System.Exception ex)
         {
-            Swal.FireAsync("Error",ex.Message, SweetAlertIcon.Error); 
+            Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
         }
     }
 
     public async Task SaveDataNikah()
     {
-      try
+        try
         {
             var url = $"{controller}/nikah/{IdJemaat}";
             var response = await Http.PutAsync(url, HttpHelper.GenerateHttpContent(Model.Nikah), default(CancellationToken));
-            if(response.IsSuccessStatusCode){
-                Swal.FireAsync("Info","Berhasil !", SweetAlertIcon.Success); 
-            } else{
-               throw new SystemException(await HttpHelper.Error(response));
+            if (response.IsSuccessStatusCode)
+            {
+                Swal.FireAsync("Info", "Berhasil !", SweetAlertIcon.Success);
+            }
+            else
+            {
+                throw new SystemException(await HttpHelper.Error(response));
             }
         }
         catch (System.Exception ex)
         {
-            Swal.FireAsync("Error",ex.Message, SweetAlertIcon.Error); 
+            Swal.FireAsync("Error", ex.Message, SweetAlertIcon.Error);
         }
     }
 }

@@ -46,15 +46,15 @@ namespace MarampaApp.Server
                 o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
                 o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 o.JsonSerializerOptions.MaxDepth = 0;
-                o.JsonSerializerOptions.WriteIndented= true;
             });
             services.AddRazorPages();
-
+            services.AddScoped<JemaatService>();
             services.AddScoped<GerejaService>();
             services.AddScoped<KeluargaService>();
             services.AddScoped<RayonService>();
             services.AddScoped<PekerjaanService>();
             services.AddScoped<TahunPelayananService>();
+            services.AddScoped<DocumentService>();
 
         }
 

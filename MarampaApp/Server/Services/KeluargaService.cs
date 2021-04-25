@@ -23,8 +23,9 @@ namespace MarampaApp.Services
         {
             var result = _dbContext.Keluarga
             .Include(x=>x.Rayon)
-            .Include(x => x.Jemaat).Where(t => t.Jemaat.Any(t => t.HubunganKeluarga == HubunganKeluarga.KepalaKeluarga))
-            .AsEnumerable();
+            .Include(x => x.Jemaat)
+            .ToList().AsEnumerable();
+
             return Task.FromResult(result);
         }
 
@@ -95,22 +96,26 @@ namespace MarampaApp.Services
             try
             {
 
-                var keluarga = await Get(keluargaid);
+                var keluarga = _dbContext.Keluarga.Where(x=>x.Id==keluargaid).Include(x=>x.Jemaat).FirstOrDefault();
                 if (keluarga == null)
                     throw new SystemException("Data Keluarga Tidak Ditemukan");
 
                 ICollection<ValidationResult> errorResult;
-                if (ValidateModel.Validate(model, out errorResult))
+
+                if(model.HubunganKeluarga== HubunganKeluarga.None)
+                    throw new SystemException("Hubungan Keluarga Harus Diisi");
+
+
+                if (ValidateModel.Validate(model, out errorResult) && ValidJemaat(model))
                 {
                     keluarga.Jemaat.Add(model);
                     await _dbContext.SaveChangesAsync();
                     return model;
                 }
-                else
+                else                                                                                                 
                 {
                     throw new ModelValidationException("Data Tidak Valid", errorResult);
                 }
-
             }
             catch (Exception ex)
             {

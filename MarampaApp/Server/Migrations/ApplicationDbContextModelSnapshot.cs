@@ -170,9 +170,6 @@ namespace MarampaApp.Server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Berkas")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
 
@@ -213,9 +210,6 @@ namespace MarampaApp.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
-
-                    b.Property<string>("Berkas")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
@@ -277,9 +271,6 @@ namespace MarampaApp.Server.Migrations
 
                     b.Property<string>("Alamat")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Berkas")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
@@ -395,9 +386,6 @@ namespace MarampaApp.Server.Migrations
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
 
-                    b.Property<string>("Berkas")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
 
@@ -424,9 +412,6 @@ namespace MarampaApp.Server.Migrations
 
                     b.Property<int?>("BendaharaId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Berkas")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
@@ -503,9 +488,6 @@ namespace MarampaApp.Server.Migrations
 
                     b.Property<bool>("Aktif")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Berkas")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");

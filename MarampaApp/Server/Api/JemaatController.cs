@@ -22,6 +22,7 @@ namespace MarampaApp.Controllers
             return Ok(await _jemaatService.Get());
         }
 
+       
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -35,12 +36,41 @@ namespace MarampaApp.Controllers
             }
         }
 
+        [HttpGet("search/{param}")]
+        public async Task<IActionResult> GetByParam(string param)
+        {
+            try
+            {
+                var result = await _jemaatService.GetByParam(param);
+                return Ok(result);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
         [HttpPost]
-        public async Task<ActionResult<Keluarga>> Post(Jemaat model)
+        public async Task<IActionResult> Post(Jemaat model)
         {
             try
             {
                 var result = await _jemaatService.Post(model);
+                return Ok(result);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, Jemaat model)
+        {
+            try
+            {
+                var result = await _jemaatService.Put(id, model);
                 return Ok(result);
             }
             catch (System.Exception ex)
@@ -62,6 +92,38 @@ namespace MarampaApp.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
+        [HttpPut("sidi/{id}")]
+        public async Task<ActionResult<Baptis>> PutSidi(int id, Sidi model)
+        {
+            try
+            {
+                var result = await _jemaatService.PutSidi(id, model);
+                return Ok(result);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
+        [HttpPut("nikah/{id}")]
+        public async Task<ActionResult<Baptis>> PutNikah(int id, Nikah model)
+        {
+            try
+            {
+                var result = await _jemaatService.PutNikah(id, model);
+                return Ok(result);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
 
 

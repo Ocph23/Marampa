@@ -24,7 +24,7 @@ namespace MarampaApp.Models
 
         public bool Aktif { get; set; } = true;
 
-        public Jemaat KepalaKeluarga => Jemaat != null ? Jemaat.SingleOrDefault(x => x.HubunganKeluarga == HubunganKeluarga.KepalaKeluarga) : null;
+        public Jemaat KepalaKeluarga => Jemaat != null && Jemaat.Count>0 ? Jemaat.Where(x => x.HubunganKeluarga == HubunganKeluarga.KepalaKeluarga).FirstOrDefault() : null;
 
     }
 }

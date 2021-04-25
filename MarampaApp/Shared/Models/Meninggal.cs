@@ -2,7 +2,7 @@ using System;
 
 namespace MarampaApp.Models
 {
-    public class Meninggal : Entity
+    public class Meninggal : EntityWithBerkas
     {
         public string NomorSurat { get; set; }
         public string Keterangan { get; set; }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MarampaApp.Models
 {
-    public class Nikah : Entity
+    public class Nikah : EntityWithBerkas
     {
         [ForeignKey("Jemaat")]
         public override int Id { get; set; }

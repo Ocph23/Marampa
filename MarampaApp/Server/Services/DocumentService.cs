@@ -2,35 +2,43 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using MarampaApp;
+using MarampaApp.Models;
+using Microsoft.AspNetCore.Hosting;
 
 namespace MarampaApp.Services
 {
     public class DocumentService
     {
-        private string GetPath(JenisDokumen jenis)
+        private string basePath ;
+
+        public DocumentService(IWebHostEnvironment env)
         {
-            switch (jenis)
-            {
-                case JenisDokumen.Baptis:
-                    return $"{AppContext.BaseDirectory}/documents/baptis";
-                case JenisDokumen.Sidi:
-                    return $"{AppContext.BaseDirectory}/documents/sidi";
-                case JenisDokumen.Nikah:
-                    return $"{AppContext.BaseDirectory}/documents/nikah";
-                default:
-                    return $"{AppContext.BaseDirectory}/Documents";
-
-            }
-
+            basePath = Path.Combine(env.ContentRootPath,
+                          "documents");
         }
 
-        public Task<Tuple<bool, string>> SaveDocument(JenisDokumen jenis, string berkas, byte[] data)
+        private string GetPath(Type jenis)
+        {
+            switch (jenis.Name)
+            {
+                case "Baptis":
+                    return "/baptis";
+                case "Sidi":
+                    return "/sidi";
+                case "Nikah":
+                    return "/nikah";
+                default:
+                    return "/";
+            }
+        }
+
+        public Task<Tuple<bool, string>> SaveDocument(Type jenis, EntityWithBerkas berkas)
         {
             try
             {
                 var fileName = $"{GetPath(jenis)}/{Guid.NewGuid()}.pdf";
-                File.WriteAllBytes(fileName, data);
-                RemoveDocument(jenis, berkas);
+                File.WriteAllBytes($"{basePath}{fileName}", berkas.DataBerkas);
+                RemoveDocument(berkas.Berkas);
                 return Task.FromResult(Tuple.Create(true, fileName));
             }
             catch (System.Exception ex)
@@ -40,9 +48,9 @@ namespace MarampaApp.Services
 
         }
 
-        private Task RemoveDocument(JenisDokumen jenis, string berkas)
+        private Task RemoveDocument(string berkas)
         {
-            var fileName = $"{GetPath(jenis)}/{berkas}";
+            var fileName = $"{basePath}/{berkas}";
             if (!string.IsNullOrEmpty(berkas) && File.Exists(fileName))
             {
                 File.Delete(fileName);

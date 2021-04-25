@@ -28,5 +28,10 @@
   <ItemGroup>
     <None Include="Pages\JemaatPages\KeluargaPage.razor" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\documents\baptis\" />
+    <Folder Include="wwwroot\documents\nikah\" />
+    <Folder Include="wwwroot\documents\sidi\" />
+  </ItemGroup>
 
 </Project>

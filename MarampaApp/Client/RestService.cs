@@ -14,7 +14,8 @@ namespace MarampaApp.Client
         static 	JsonSerializerOptions jsonOptions = new()
                 {
                     ReferenceHandler = ReferenceHandler.Preserve,
-                    PropertyNamingPolicy= JsonNamingPolicy.CamelCase
+                    PropertyNamingPolicy= JsonNamingPolicy.CamelCase, 
+                    MaxDepth=0
                 };
 
         public static StringContent GenerateHttpContent(object data)

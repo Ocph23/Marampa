@@ -29,4 +29,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="documents\baptis\" />
+    <Folder Include="documents\nikah\" />
+    <Folder Include="documents\sidi\" />
+  </ItemGroup>
+
 </Project>

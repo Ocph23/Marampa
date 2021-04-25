@@ -1,0 +1,118 @@
+﻿@page "/jemaat"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MarampaApp.Shared
+@using System.Text.Json
+@using System.Text.Json.Serialization
+
+@attribute [Authorize]
+@inject HttpClient Http
+@inject SweetAlertService Swal
+@inject NavigationManager nav
+
+<div class="row">
+    <Radzen.Blazor.RadzenFieldset>
+        <HeaderTemplate>
+            <span>
+                <h2>Data Jemaat</h2>
+            </span>
+        </HeaderTemplate>
+        <ChildContent>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-3 align-items-center d-flex">
+                            <RadzenLabel Text="Nama/NIK" />
+                        </div>
+                        <div class="col-md-7">
+                            <div style="display:flex">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="textSearch" />
+                                <RadzenButton Style="width:40px" Click="@SearchAction" Icon="search" ButtonStyle="ButtonStyle.Secondary"></RadzenButton>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div style="margin-bottom:10px; display:flex;justify-content:flex-end">
+                        <RadzenButton Size="ButtonSize.Medium" Click="@(()=>nav.NavigateTo("/jemaat/addjemaat"))" Icon="add" ButtonStyle="ButtonStyle.Success" Style="text-align:right" />
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+             {
+                <span style="color:orangered; margin:20px 0px">@errorMessage</span>
+             }
+
+            <RadzenGrid @ref="grid" Data="@sources"
+                        AllowFiltering="true" AllowPaging="true" AllowSorting="true" TItem="Jemaat" ColumnWidth="200px">
+                <Columns>
+                    <RadzenGridColumn Width="100px" TItem="Jemaat" Property="NIK" Title="Nomor Induk" />
+                    <RadzenGridColumn TItem="Jemaat" Property="Nama" Title="Nama" />
+                    <RadzenGridColumn TItem="Jemaat" Property="JenisKelamin" Title="Jenis Kelamin" />
+                    <RadzenGridColumn TItem="Jemaat" Property="TanggalLahir" Title="Tanggal Lahir" />
+                    <RadzenGridColumn TItem="Jemaat" Width="50px">
+                        <Template Context="item">
+                            <RadzenButton Size="ButtonSize.Medium" Click="@(()=>nav.NavigateTo($"/jemaat/anggota/{item.Id}"))" Icon="edit" ButtonStyle="ButtonStyle.Warning" Style="text-align:right" />
+                        </Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+        </ChildContent>
+    </Radzen.Blazor.RadzenFieldset>
+</div>
+
+
+
+@code {
+    string controller = "/api/jemaat";
+    private Jemaat Model;
+    private IEnumerable<Jemaat> sources;
+
+    RadzenGrid<Jemaat> grid;
+
+    string textSearch;
+    string errorMessage;
+
+    int count;
+
+    async Task SearchAction()
+    {
+
+        try
+        {
+            errorMessage = string.Empty;
+            sources = null;
+            var responseMessage = await Http.GetAsync($"{controller}/search/{textSearch}");
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var data = await HttpHelper.GetResult<IEnumerable<Jemaat>>(responseMessage);
+                if (data != null && data.Count()>0)
+                {
+                    sources = data.ToList();
+                }
+                else
+                    throw new SystemException("Data Tidak Ditemukan !");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            await  Task.Factory.StartNew(()=>SetEmptyMessage());
+        }
+        finally
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+
+    async Task SetEmptyMessage()
+    {
+        await Task.Delay(3000);
+        errorMessage = string.Empty;
+        await InvokeAsync(StateHasChanged);
+    }
+}
+
+

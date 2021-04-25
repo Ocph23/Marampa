@@ -143,8 +143,7 @@
                     ($"{controller}", model, cancelToken.Token);
                 if (response.IsSuccessStatusCode)
                 {
-                    var data = await HttpHelper.GetResult<Pekerjaan>
-                        (response);
+                    var data = await HttpHelper.GetResult<Pekerjaan>(response);
                     sources.Add(data);
                     await Swal.FireAsync("Success", "Data Berhasil Disimpan !", SweetAlertIcon.Success);
                     await InvokeAsync(() => StateHasChanged());

@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MarampaApp.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210314051549_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210317050002_EntityWithBerkas")]
+    partial class EntityWithBerkas
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -172,9 +172,6 @@ namespace MarampaApp.Server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Berkas")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
 
@@ -215,9 +212,6 @@ namespace MarampaApp.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
-
-                    b.Property<string>("Berkas")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
@@ -279,9 +273,6 @@ namespace MarampaApp.Server.Migrations
 
                     b.Property<string>("Alamat")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Berkas")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
@@ -397,9 +388,6 @@ namespace MarampaApp.Server.Migrations
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
 
-                    b.Property<string>("Berkas")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
 
@@ -426,9 +414,6 @@ namespace MarampaApp.Server.Migrations
 
                     b.Property<int?>("BendaharaId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Berkas")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
@@ -505,9 +490,6 @@ namespace MarampaApp.Server.Migrations
 
                     b.Property<bool>("Aktif")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Berkas")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");

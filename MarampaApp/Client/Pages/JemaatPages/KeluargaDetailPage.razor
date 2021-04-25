@@ -97,23 +97,23 @@
                             <RadzenGrid Data="@Model.Jemaat" AllowFiltering="true" AllowPaging="true"
                                 AllowSorting="true" TItem="Jemaat" ColumnWidth="200px">
                                 <Columns>
-                                    <RadzenGridColumn TItem="Jemaat" Property="NIK" Title="NIK" />
                                     <RadzenGridColumn TItem="Jemaat" Property="Nama" Title="Nama">
                                         <EditTemplate Context="item">
                                             <RadzenTextBox @bind-Value="item.Nama" />
                                         </EditTemplate>
                                     </RadzenGridColumn>
+                                    <RadzenGridColumn TItem="Jemaat" Property="NIK" Title="NIK" />
                                     <RadzenGridColumn TItem="Jemaat" Property="JenisKelamin" Title="Jenis Kelamin">
                                         <EditTemplate Context="item">
                                             <RadzenDropDown Data="@(Enum.GetValues(typeof(JenisKelamin)))"
-                                                TValue="JenisKelamin" @bind-Value="item.JenisKelamin" />
+                                                            TValue="JenisKelamin" @bind-Value="item.JenisKelamin" />
                                         </EditTemplate>
                                     </RadzenGridColumn>
                                     <RadzenGridColumn TItem="Jemaat" Property="HubunganKeluarga"
-                                        Title="Hubungan Kekeluargaan">
+                                                      Title="Hubungan Kekeluargaan">
                                         <EditTemplate Context="item">
                                             <RadzenDropDown Data="@(Enum.GetValues(typeof(HubunganKeluarga)))"
-                                                TValue="HubunganKeluarga" @bind-Value="item.HubunganKeluarga" />
+                                                            TValue="HubunganKeluarga" @bind-Value="item.HubunganKeluarga" />
                                         </EditTemplate>
                                     </RadzenGridColumn>
                                     <RadzenGridColumn TItem="Jemaat" Property="Kawin" Title="Kawin">
@@ -126,9 +126,9 @@
                                     <RadzenGridColumn TItem="Jemaat" Title="" Width="75px">
                                         <Template Context="item">
                                             <RadzenButton Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Warning" Click="@(()=>Edit(item))"
-                                                Icon="edit" />
+                                                          Icon="edit" />
                                             <RadzenButton Visible="@(item.Id<=0)" Size="ButtonSize.Small"
-                                                ButtonStyle="ButtonStyle.Danger" Icon="remove" />
+                                                          ButtonStyle="ButtonStyle.Danger" Icon="remove" />
                                         </Template>
                                     </RadzenGridColumn>
                                 </Columns>
